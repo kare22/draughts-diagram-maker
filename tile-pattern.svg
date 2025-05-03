@@ -2,7 +2,7 @@
     <defs>
         <pattern id="diagonalPattern" patternUnits="userSpaceOnUse" width="20" height="20">
             <!-- Background fill -->
-            <rect width="20" height="20" fill="#000000" />
+            <rect width="20" height="20" fill="#8B4513" />
 
             <!-- Diagonal white stripes (mimicking 135deg linear-gradient steps) -->
             <path d="M0,20 L5,20 L20,5 L20,0 L15,0 L0,15 Z" fill="rgba(255,255,255,0.2)" />

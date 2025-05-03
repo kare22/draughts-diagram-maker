@@ -2,7 +2,7 @@
 let boardSize = 8;
 let selectedPiece = 'none';
 let lightSquareColor = '#FFFFFF';
-let darkSquareColor = '#000000';
+let darkSquareColor = '#8B4513'; // SaddleBrown color for dark squares
 let boardState = [];
 
 // Initialize the application when the DOM is fully loaded
@@ -16,8 +16,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize the board with the current settings
 function initializeBoard() {
-    const board = document.getElementById('board');
-    board.innerHTML = '';
+    const boardContainer = document.querySelector('.board-container');
+    boardContainer.innerHTML = '';
+
+    // Create board wrapper
+    const boardWrapper = document.createElement('div');
+    boardWrapper.className = 'board-wrapper';
+    boardContainer.appendChild(boardWrapper);
+
+    // Create board
+    const board = document.createElement('div');
+    board.id = 'board';
+    board.className = 'board';
+    boardWrapper.appendChild(board);
 
     // Update grid template based on board size
     board.style.gridTemplateColumns = `repeat(${boardSize}, 1fr)`;
@@ -25,6 +36,28 @@ function initializeBoard() {
 
     // Initialize board state array
     boardState = Array(boardSize).fill().map(() => Array(boardSize).fill(null));
+
+    // Create row labels (numbers)
+    const rowLabels = document.createElement('div');
+    rowLabels.className = 'board-row-labels';
+    for (let row = 0; row < boardSize; row++) {
+        const label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = boardSize - row; // Numbers start from the top (8, 7, 6, ...)
+        rowLabels.appendChild(label);
+    }
+    boardWrapper.appendChild(rowLabels);
+
+    // Create column labels (letters)
+    const colLabels = document.createElement('div');
+    colLabels.className = 'board-col-labels';
+    for (let col = 0; col < boardSize; col++) {
+        const label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = String.fromCharCode(65 + col); // Letters start from the left (A, B, C, ...)
+        colLabels.appendChild(label);
+    }
+    boardWrapper.appendChild(colLabels);
 
     // Create squares
     for (let row = 0; row < boardSize; row++) {
@@ -172,11 +205,16 @@ async function exportAsSVG() {
     const width = boardRect.width;
     const height = boardRect.height;
 
+    // Add margin for labels
+    const margin = 30;
+    const totalWidth = width + margin;
+    const totalHeight = height + margin;
+
     // Create SVG element
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', height);
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('width', totalWidth);
+    svg.setAttribute('height', totalHeight);
+    svg.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
     // Load tile pattern SVG
@@ -206,11 +244,39 @@ async function exportAsSVG() {
     // Calculate square size
     const squareSize = width / boardSize;
 
+    // Add row labels (numbers)
+    for (let row = 0; row < boardSize; row++) {
+        const y = row * squareSize + squareSize / 2;
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', margin / 2);
+        text.setAttribute('y', y + margin);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('font-size', '16');
+        text.setAttribute('font-weight', 'bold');
+        text.textContent = boardSize - row;
+        svg.appendChild(text);
+    }
+
+    // Add column labels (letters)
+    for (let col = 0; col < boardSize; col++) {
+        const x = col * squareSize + squareSize / 2;
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x + margin);
+        text.setAttribute('y', height + margin * 0.75);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('font-size', '16');
+        text.setAttribute('font-weight', 'bold');
+        text.textContent = String.fromCharCode(65 + col);
+        svg.appendChild(text);
+    }
+
     // Add squares to SVG
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
-            const x = col * squareSize;
-            const y = row * squareSize;
+            const x = col * squareSize + margin;
+            const y = row * squareSize + margin;
 
             // Create square
             const square = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -252,8 +318,8 @@ async function exportAsSVG() {
     // Add pieces to SVG
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
-            const x = col * squareSize;
-            const y = row * squareSize;
+            const x = col * squareSize + margin;
+            const y = row * squareSize + margin;
 
             // Add piece if present
             const pieceType = boardState[row][col];
@@ -321,11 +387,16 @@ async function exportAsPNG() {
     const width = boardRect.width;
     const height = boardRect.height;
 
+    // Add margin for labels
+    const margin = 30;
+    const totalWidth = width + margin;
+    const totalHeight = height + margin;
+
     // Create SVG element
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', width);
-    svg.setAttribute('height', height);
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('width', totalWidth);
+    svg.setAttribute('height', totalHeight);
+    svg.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
     // Load tile pattern SVG
@@ -355,11 +426,39 @@ async function exportAsPNG() {
     // Calculate square size
     const squareSize = width / boardSize;
 
+    // Add row labels (numbers)
+    for (let row = 0; row < boardSize; row++) {
+        const y = row * squareSize + squareSize / 2;
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', margin / 2);
+        text.setAttribute('y', y + margin);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('font-size', '16');
+        text.setAttribute('font-weight', 'bold');
+        text.textContent = boardSize - row;
+        svg.appendChild(text);
+    }
+
+    // Add column labels (letters)
+    for (let col = 0; col < boardSize; col++) {
+        const x = col * squareSize + squareSize / 2;
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', x + margin);
+        text.setAttribute('y', height + margin * 0.75);
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('font-size', '16');
+        text.setAttribute('font-weight', 'bold');
+        text.textContent = String.fromCharCode(65 + col);
+        svg.appendChild(text);
+    }
+
     // Add squares to SVG
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
-            const x = col * squareSize;
-            const y = row * squareSize;
+            const x = col * squareSize + margin;
+            const y = row * squareSize + margin;
 
             // Create square
             const square = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -401,8 +500,8 @@ async function exportAsPNG() {
     // Add pieces to SVG
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
-            const x = col * squareSize;
-            const y = row * squareSize;
+            const x = col * squareSize + margin;
+            const y = row * squareSize + margin;
 
             // Add piece if present
             const pieceType = boardState[row][col];
@@ -439,8 +538,8 @@ async function exportAsPNG() {
 
     // Create a canvas element to draw the SVG
     const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = totalWidth;
+    canvas.height = totalHeight;
     const ctx = canvas.getContext('2d');
 
     // Create an image from the SVG
