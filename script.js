@@ -176,6 +176,37 @@ function exportAsSVG() {
     svg.setAttribute('height', height);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
+    // Create diagonal pattern for dark squares
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+    pattern.setAttribute('id', 'diagonalPattern');
+    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+    pattern.setAttribute('width', '20');
+    pattern.setAttribute('height', '20');
+
+    // First diagonal line (45 degrees)
+    const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line1.setAttribute('x1', '0');
+    line1.setAttribute('y1', '0');
+    line1.setAttribute('x2', '20');
+    line1.setAttribute('y2', '20');
+    line1.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+    line1.setAttribute('stroke-width', '1');
+
+    // Second diagonal line (135 degrees)
+    const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line2.setAttribute('x1', '20');
+    line2.setAttribute('y1', '0');
+    line2.setAttribute('x2', '0');
+    line2.setAttribute('y2', '20');
+    line2.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+    line2.setAttribute('stroke-width', '1');
+
+    pattern.appendChild(line1);
+    pattern.appendChild(line2);
+    defs.appendChild(pattern);
+    svg.appendChild(defs);
+
     // Calculate square size
     const squareSize = width / boardSize;
 
@@ -197,6 +228,14 @@ function exportAsSVG() {
                 square.setAttribute('fill', lightSquareColor);
             } else {
                 square.setAttribute('fill', darkSquareColor);
+                // Add diagonal pattern on top of the dark square
+                const patternRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                patternRect.setAttribute('x', x);
+                patternRect.setAttribute('y', y);
+                patternRect.setAttribute('width', squareSize);
+                patternRect.setAttribute('height', squareSize);
+                patternRect.setAttribute('fill', 'url(#diagonalPattern)');
+                svg.appendChild(patternRect);
             }
 
             svg.appendChild(square);
@@ -268,6 +307,37 @@ function exportAsPNG() {
     svg.setAttribute('height', height);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
+    // Create diagonal pattern for dark squares
+    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+    const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+    pattern.setAttribute('id', 'diagonalPattern');
+    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+    pattern.setAttribute('width', '20');
+    pattern.setAttribute('height', '20');
+
+    // First diagonal line (45 degrees)
+    const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line1.setAttribute('x1', '0');
+    line1.setAttribute('y1', '0');
+    line1.setAttribute('x2', '20');
+    line1.setAttribute('y2', '20');
+    line1.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+    line1.setAttribute('stroke-width', '1');
+
+    // Second diagonal line (135 degrees)
+    const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line2.setAttribute('x1', '20');
+    line2.setAttribute('y1', '0');
+    line2.setAttribute('x2', '0');
+    line2.setAttribute('y2', '20');
+    line2.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
+    line2.setAttribute('stroke-width', '1');
+
+    pattern.appendChild(line1);
+    pattern.appendChild(line2);
+    defs.appendChild(pattern);
+    svg.appendChild(defs);
+
     // Calculate square size
     const squareSize = width / boardSize;
 
@@ -289,6 +359,14 @@ function exportAsPNG() {
                 square.setAttribute('fill', lightSquareColor);
             } else {
                 square.setAttribute('fill', darkSquareColor);
+                // Add diagonal pattern on top of the dark square
+                const patternRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                patternRect.setAttribute('x', x);
+                patternRect.setAttribute('y', y);
+                patternRect.setAttribute('width', squareSize);
+                patternRect.setAttribute('height', squareSize);
+                patternRect.setAttribute('fill', 'url(#diagonalPattern)');
+                svg.appendChild(patternRect);
             }
 
             svg.appendChild(square);
