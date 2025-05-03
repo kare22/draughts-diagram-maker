@@ -41,7 +41,8 @@ function initializeBoard() {
                 square.style.backgroundColor = lightSquareColor;
             } else {
                 square.classList.add('dark');
-                square.style.backgroundColor = darkSquareColor;
+                // Only set the background color property, don't override the background-image from CSS
+                square.style.setProperty('background-color', darkSquareColor);
             }
 
             // Add click event to place or remove pieces
@@ -159,7 +160,8 @@ function updateBoardColors() {
     });
 
     darkSquares.forEach(square => {
-        square.style.backgroundColor = darkSquareColor;
+        // Only set the background color property, don't override the background-image from CSS
+        square.style.setProperty('background-color', darkSquareColor);
     });
 }
 
