@@ -199,7 +199,7 @@ function updateBoardColors() {
 }
 
 // Export the board as an SVG image
-async function exportAsSVG() {
+async function exportAsSVG(download = true) {
     const board = document.getElementById('board');
     const boardRect = board.getBoundingClientRect();
     const width = boardRect.width;
@@ -358,16 +358,21 @@ async function exportAsSVG() {
     // Convert SVG to string
     const serializer = new XMLSerializer();
     const svgString = serializer.serializeToString(svg);
-    const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
-    const svgUrl = URL.createObjectURL(svgBlob);
 
-    // Create download link
-    const downloadLink = document.createElement('a');
-    downloadLink.href = svgUrl;
-    downloadLink.download = 'draughts-diagram.svg';
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+    if (download) {
+        const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        // Create download link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = svgUrl;
+        downloadLink.download = 'draughts-diagram.svg';
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    return { svg, svgString, width: totalWidth, height: totalHeight };
 }
 
 // Helper function to load SVG file content
@@ -386,187 +391,13 @@ async function loadSvgFile(filename) {
 
 // Export the board as a PNG image
 async function exportAsPNG() {
-    // First create an SVG
-    const board = document.getElementById('board');
-    const boardRect = board.getBoundingClientRect();
-    const width = boardRect.width;
-    const height = boardRect.height;
-
-    // Add margin for labels
-    const margin = 30;
-    const totalWidth = width + margin;
-    const totalHeight = height + margin;
-
-    // Create SVG element
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.setAttribute('width', totalWidth);
-    svg.setAttribute('height', totalHeight);
-    svg.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-
-    // Load tile pattern SVG
-    const tilePatternSvg = await loadSvgFile('tile-pattern.svg');
-
-    // Extract the pattern from tile-pattern.svg
-    const parser = new DOMParser();
-    const tilePatternDoc = parser.parseFromString(tilePatternSvg, 'image/svg+xml');
-    const patternElement = tilePatternDoc.querySelector('pattern');
-
-    // Create defs element and add the pattern
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
-
-    // Copy attributes from the original pattern
-    pattern.setAttribute('id', 'diagonalPattern');
-    pattern.setAttribute('patternUnits', patternElement.getAttribute('patternUnits'));
-    pattern.setAttribute('width', patternElement.getAttribute('width'));
-    pattern.setAttribute('height', patternElement.getAttribute('height'));
-
-    // Copy the pattern content
-    pattern.innerHTML = patternElement.innerHTML;
-
-    defs.appendChild(pattern);
-    svg.appendChild(defs);
-
-    // Calculate square size
-    const squareSize = width / boardSize;
-
-    // Add row labels (numbers)
-    for (let row = 0; row < boardSize; row++) {
-        const y = row * squareSize + squareSize / 2;
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', margin / 2);
-        text.setAttribute('y', y + margin);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('dominant-baseline', 'middle');
-        text.setAttribute('font-size', '16');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', '#333333'); // Ensure text is visible
-        text.textContent = boardSize - row;
-        svg.appendChild(text);
-    }
-
-    // Add column labels (letters)
-    for (let col = 0; col < boardSize; col++) {
-        const x = col * squareSize + squareSize / 2;
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x + margin);
-        text.setAttribute('y', height + margin * 0.75);
-        text.setAttribute('text-anchor', 'middle');
-        text.setAttribute('dominant-baseline', 'middle');
-        text.setAttribute('font-size', '16');
-        text.setAttribute('font-weight', 'bold');
-        text.setAttribute('fill', '#333333'); // Ensure text is visible
-        text.textContent = String.fromCharCode(65 + col);
-        svg.appendChild(text);
-    }
-
-    // Add numbers/letters inside the board (on light squares)
-    for (let row = 0; row < boardSize; row++) {
-        for (let col = 0; col < boardSize; col++) {
-            // Only add numbers to light squares
-            if ((row + col) % 2 === 0) {
-                const x = col * squareSize + margin + squareSize / 2;
-                const y = row * squareSize + margin + squareSize / 2;
-                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                text.setAttribute('x', x);
-                text.setAttribute('y', y);
-                text.setAttribute('text-anchor', 'middle');
-                text.setAttribute('dominant-baseline', 'middle');
-                text.setAttribute('font-size', '12');
-                text.setAttribute('fill', '#999999'); // Light gray color
-                text.textContent = (boardSize - row) + String.fromCharCode(65 + col);
-                svg.appendChild(text);
-            }
-        }
-    }
-
-    // Add squares to SVG
-    for (let row = 0; row < boardSize; row++) {
-        for (let col = 0; col < boardSize; col++) {
-            const x = col * squareSize + margin;
-            const y = row * squareSize + margin;
-
-            // Create square
-            const square = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-            square.setAttribute('x', x);
-            square.setAttribute('y', y);
-            square.setAttribute('width', squareSize);
-            square.setAttribute('height', squareSize);
-
-            // Set color based on position
-            if ((row + col) % 2 === 0) {
-                square.setAttribute('fill', lightSquareColor);
-            } else {
-                square.setAttribute('fill', darkSquareColor);
-                svg.appendChild(square);
-
-                // Add diagonal pattern on top of the dark square
-                const patternRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-                patternRect.setAttribute('x', x);
-                patternRect.setAttribute('y', y);
-                patternRect.setAttribute('width', squareSize);
-                patternRect.setAttribute('height', squareSize);
-                patternRect.setAttribute('fill', 'url(#diagonalPattern)');
-                svg.appendChild(patternRect);
-                continue; // Skip adding the square again
-            }
-
-            svg.appendChild(square);
-        }
-    }
-
-    // Load all SVG piece files
-    const svgFiles = {
-        'white': await loadSvgFile('man-white.svg'),
-        'black': await loadSvgFile('man-black.svg'),
-        'white-king': await loadSvgFile('king-white.svg'),
-        'black-king': await loadSvgFile('king-black.svg')
-    };
-
-    // Add pieces to SVG
-    for (let row = 0; row < boardSize; row++) {
-        for (let col = 0; col < boardSize; col++) {
-            const x = col * squareSize + margin;
-            const y = row * squareSize + margin;
-
-            // Add piece if present
-            const pieceType = boardState[row][col];
-            if (pieceType) {
-                // Create a group for the piece
-                const pieceGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-                // Calculate piece position and size
-                const pieceSize = squareSize * 0.8;
-                const pieceX = x + (squareSize - pieceSize) / 2;
-                const pieceY = y + (squareSize - pieceSize) / 2;
-
-                // Set transform to position and scale the piece
-                pieceGroup.setAttribute('transform', `translate(${pieceX}, ${pieceY}) scale(${pieceSize/210})`);
-
-                // Get the SVG content for this piece type
-                const pieceSvgContent = svgFiles[pieceType];
-                if (pieceSvgContent) {
-                    // Extract the inner content of the SVG (everything between <svg> and </svg>)
-                    const innerContent = pieceSvgContent.match(/<svg[^>]*>([\s\S]*)<\/svg>/i)[1];
-
-                    // Set the inner HTML of the piece group
-                    pieceGroup.innerHTML = innerContent;
-
-                    svg.appendChild(pieceGroup);
-                }
-            }
-        }
-    }
-
-    // Convert SVG to string
-    const serializer = new XMLSerializer();
-    const svgString = serializer.serializeToString(svg);
+    // Get SVG from exportAsSVG function (without downloading it)
+    const { svg, svgString, width, height } = await exportAsSVG(false);
 
     // Create a canvas element to draw the SVG
     const canvas = document.createElement('canvas');
-    canvas.width = totalWidth;
-    canvas.height = totalHeight;
+    canvas.width = width;
+    canvas.height = height;
     const ctx = canvas.getContext('2d');
 
     // Create an image from the SVG
