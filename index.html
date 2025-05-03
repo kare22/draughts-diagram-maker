@@ -9,12 +9,12 @@
 <body>
     <div class="container">
         <h1>Draughts/Checkers Diagram Maker</h1>
-        
+
         <div class="app-container">
             <div class="board-container">
                 <div id="board" class="board"></div>
             </div>
-            
+
             <div class="controls-container">
                 <div class="control-section">
                     <h2>Board Configuration</h2>
@@ -26,49 +26,51 @@
                             <option value="12">12x12</option>
                         </select>
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="board-color-light">Light Squares:</label>
                         <input type="color" id="board-color-light" value="#FFFFFF">
                     </div>
-                    
+
                     <div class="control-group">
                         <label for="board-color-dark">Dark Squares:</label>
                         <input type="color" id="board-color-dark" value="#000000">
                     </div>
                 </div>
-                
+
                 <div class="control-section">
                     <h2>Piece Selection</h2>
                     <div class="piece-selector">
                         <div class="piece-option" data-piece="white">White Man</div>
                         <div class="piece-option" data-piece="white-king">White King</div>
+                        <div class="piece-option" data-piece="white-star">White Star</div>
                         <div class="piece-option" data-piece="black">Black Man</div>
                         <div class="piece-option" data-piece="black-king">Black King</div>
+                        <div class="piece-option" data-piece="black-star">Black Star</div>
                         <div class="piece-option" data-piece="none" data-selected="true">No Piece (Eraser)</div>
                     </div>
                 </div>
-                
+
                 <div class="control-section">
                     <h2>Export Options</h2>
                     <button id="export-svg">Export as SVG</button>
                     <button id="export-png">Export as PNG</button>
                 </div>
-                
+
                 <div class="control-section">
                     <h2>Reset</h2>
                     <button id="reset-board">Clear Board</button>
                 </div>
             </div>
         </div>
-        
+
         <div class="instructions">
             <h2>Instructions</h2>
             <p>Click on a square to place the selected piece. Use the controls to configure the board and pieces.</p>
             <p>When ready, export your diagram as SVG or PNG using the export buttons.</p>
         </div>
     </div>
-    
+
     <script src="script.js"></script>
 </body>
 </html>

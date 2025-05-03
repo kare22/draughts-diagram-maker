@@ -170,6 +170,10 @@ function handleSquareClick(square) {
             img.src = 'assets/king-white.svg';
         } else if (selectedPiece === 'black-king') {
             img.src = 'assets/king-black.svg';
+        } else if (selectedPiece === 'white-star') {
+            img.src = 'assets/star-white.svg';
+        } else if (selectedPiece === 'black-star') {
+            img.src = 'assets/star-black.svg';
         }
 
         // Set the img to fill the piece div
@@ -337,7 +341,9 @@ async function exportAsSVG(download = true) {
         'white': await loadSvgFile('assets/export-man-white.svg'),
         'black': await loadSvgFile('assets/export-man-black.svg'),
         'white-king': await loadSvgFile('assets/export-king-white.svg'),
-        'black-king': await loadSvgFile('assets/export-king-black.svg')
+        'black-king': await loadSvgFile('assets/export-king-black.svg'),
+        'white-star': await loadSvgFile('assets/star-white.svg'),
+        'black-star': await loadSvgFile('assets/star-black.svg')
     };
 
     // Add pieces to SVG
