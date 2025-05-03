@@ -334,10 +334,10 @@ async function exportAsSVG(download = true) {
 
     // Load all SVG piece files
     const svgFiles = {
-        'white': await loadSvgFile('man-white.svg'),
-        'black': await loadSvgFile('man-black.svg'),
-        'white-king': await loadSvgFile('king-white.svg'),
-        'black-king': await loadSvgFile('king-black.svg')
+        'white': await loadSvgFile('export-man-white.svg'),
+        'black': await loadSvgFile('export-man-black.svg'),
+        'white-king': await loadSvgFile('export-king-white.svg'),
+        'black-king': await loadSvgFile('export-king-black.svg')
     };
 
     // Add pieces to SVG
