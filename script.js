@@ -207,8 +207,9 @@ async function exportAsSVG() {
 
     // Add margin for labels
     const margin = 30;
+    const labelMargin = 50;
     const totalWidth = width + margin;
-    const totalHeight = height + margin;
+    const totalHeight = height + margin + labelMargin;
 
     // Create SVG element
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -254,23 +255,27 @@ async function exportAsSVG() {
         text.setAttribute('dominant-baseline', 'middle');
         text.setAttribute('font-size', '16');
         text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', '#333333'); // Ensure text is visible
         text.textContent = boardSize - row;
         svg.appendChild(text);
     }
 
-    // Add column labels (letters)
+    // Add column letters at the bottom (A-H)
     for (let col = 0; col < boardSize; col++) {
-        const x = col * squareSize + squareSize / 2;
+        const x = col * squareSize + squareSize / 2 + margin;
+        const y = height + margin * 1.5; // Position below the board
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', x + margin);
-        text.setAttribute('y', height + margin * 0.75);
+        text.setAttribute('x', x);
+        text.setAttribute('y', y);
         text.setAttribute('text-anchor', 'middle');
         text.setAttribute('dominant-baseline', 'middle');
         text.setAttribute('font-size', '16');
         text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', '#333333');
         text.textContent = String.fromCharCode(65 + col);
         svg.appendChild(text);
     }
+
 
     // Add squares to SVG
     for (let row = 0; row < boardSize; row++) {
@@ -436,6 +441,7 @@ async function exportAsPNG() {
         text.setAttribute('dominant-baseline', 'middle');
         text.setAttribute('font-size', '16');
         text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', '#333333'); // Ensure text is visible
         text.textContent = boardSize - row;
         svg.appendChild(text);
     }
@@ -450,8 +456,29 @@ async function exportAsPNG() {
         text.setAttribute('dominant-baseline', 'middle');
         text.setAttribute('font-size', '16');
         text.setAttribute('font-weight', 'bold');
+        text.setAttribute('fill', '#333333'); // Ensure text is visible
         text.textContent = String.fromCharCode(65 + col);
         svg.appendChild(text);
+    }
+
+    // Add numbers/letters inside the board (on light squares)
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            // Only add numbers to light squares
+            if ((row + col) % 2 === 0) {
+                const x = col * squareSize + margin + squareSize / 2;
+                const y = row * squareSize + margin + squareSize / 2;
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', x);
+                text.setAttribute('y', y);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('dominant-baseline', 'middle');
+                text.setAttribute('font-size', '12');
+                text.setAttribute('fill', '#999999'); // Light gray color
+                text.textContent = (boardSize - row) + String.fromCharCode(65 + col);
+                svg.appendChild(text);
+            }
+        }
     }
 
     // Add squares to SVG
