@@ -109,7 +109,6 @@ h1, h2 {
 }
 
 .square.dark {
-    background-color: #8B4513; /* SaddleBrown color for dark squares */
     background-image: url('tile-pattern.svg');
     background-repeat: no-repeat;
 }

@@ -2,7 +2,7 @@
 let boardSize = 8;
 let selectedPiece = 'none';
 let lightSquareColor = '#FFFFFF';
-let darkSquareColor = '#8B4513'; // SaddleBrown color for dark squares
+let darkSquareColor = '#FFFFFF';
 let boardState = [];
 
 // Initialize the application when the DOM is fully loaded
@@ -74,8 +74,7 @@ function initializeBoard() {
                 square.style.backgroundColor = lightSquareColor;
             } else {
                 square.classList.add('dark');
-                // Only set the background color property, don't override the background-image from CSS
-                square.style.setProperty('background-color', darkSquareColor);
+                square.style.backgroundColor = darkSquareColor;
             }
 
             // Add click event to place or remove pieces
@@ -185,6 +184,7 @@ function handleSquareClick(square) {
 
 // Update board colors based on current settings
 function updateBoardColors() {
+    console.log('darkSquareColor', darkSquareColor);
     const lightSquares = document.querySelectorAll('.square.light');
     const darkSquares = document.querySelectorAll('.square.dark');
 
@@ -193,8 +193,7 @@ function updateBoardColors() {
     });
 
     darkSquares.forEach(square => {
-        // Only set the background color property, don't override the background-image from CSS
-        square.style.setProperty('background-color', darkSquareColor);
+        square.style.backgroundColor = darkSquareColor;
     });
 }
 
