@@ -125,17 +125,25 @@ function handleSquareClick(square) {
         const piece = document.createElement('div');
         piece.className = 'piece';
 
-        // Add appropriate classes based on the selected piece
-        if (selectedPiece.includes('white')) {
-            piece.classList.add('white');
-        } else if (selectedPiece.includes('black')) {
-            piece.classList.add('black');
+        // Create an img element for the SVG
+        const img = document.createElement('img');
+
+        // Set the appropriate SVG file based on the selected piece
+        if (selectedPiece === 'white') {
+            img.src = 'man-white.svg';
+        } else if (selectedPiece === 'black') {
+            img.src = 'man-black.svg';
+        } else if (selectedPiece === 'white-king') {
+            img.src = 'king-white.svg';
+        } else if (selectedPiece === 'black-king') {
+            img.src = 'king-black.svg';
         }
 
-        if (selectedPiece.includes('king')) {
-            piece.classList.add('king');
-        }
+        // Set the img to fill the piece div
+        img.style.width = '100%';
+        img.style.height = '100%';
 
+        piece.appendChild(img);
         square.appendChild(piece);
         boardState[row][col] = selectedPiece;
     }
@@ -196,47 +204,37 @@ function exportAsSVG() {
             // Add piece if present
             const pieceType = boardState[row][col];
             if (pieceType) {
-                // Create circle for the piece
+                // Create a group for the piece
+                const pieceGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+                // Calculate piece position and size
                 const pieceSize = squareSize * 0.8;
                 const pieceX = x + (squareSize - pieceSize) / 2;
                 const pieceY = y + (squareSize - pieceSize) / 2;
 
-                const piece = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                piece.setAttribute('cx', x + squareSize / 2);
-                piece.setAttribute('cy', y + squareSize / 2);
-                piece.setAttribute('r', pieceSize / 2);
+                // Set transform to position and scale the piece
+                pieceGroup.setAttribute('transform', `translate(${pieceX}, ${pieceY}) scale(${pieceSize/210})`);
 
-                // Style based on piece type
-                if (pieceType.includes('white')) {
-                    piece.setAttribute('fill', '#f0f0f0');
-                    piece.setAttribute('stroke', '#ddd');
-                } else {
-                    piece.setAttribute('fill', '#333');
-                    piece.setAttribute('stroke', '#222');
+                // Load the appropriate SVG file based on piece type
+                let svgFile;
+                if (pieceType === 'white') {
+                    svgFile = 'man-white.svg';
+                } else if (pieceType === 'black') {
+                    svgFile = 'man-black.svg';
+                } else if (pieceType === 'white-king') {
+                    svgFile = 'king-white.svg';
+                } else if (pieceType === 'black-king') {
+                    svgFile = 'king-black.svg';
                 }
-                piece.setAttribute('stroke-width', '2');
 
-                svg.appendChild(piece);
+                // Use an image element to include the SVG file
+                const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                image.setAttribute('href', svgFile);
+                image.setAttribute('width', '210');
+                image.setAttribute('height', '210');
 
-                // Add king symbol if needed
-                if (pieceType.includes('king')) {
-                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    text.setAttribute('x', x + squareSize / 2);
-                    text.setAttribute('y', y + squareSize / 2);
-                    text.setAttribute('text-anchor', 'middle');
-                    text.setAttribute('dominant-baseline', 'middle');
-                    text.setAttribute('font-size', squareSize / 3);
-                    text.setAttribute('font-weight', 'bold');
-
-                    if (pieceType.includes('white')) {
-                        text.setAttribute('fill', '#333');
-                    } else {
-                        text.setAttribute('fill', '#f0f0f0');
-                    }
-
-                    text.textContent = 'K';
-                    svg.appendChild(text);
-                }
+                pieceGroup.appendChild(image);
+                svg.appendChild(pieceGroup);
             }
         }
     }
@@ -295,48 +293,40 @@ function exportAsPNG() {
 
             svg.appendChild(square);
 
-            // Add piece if present (same as in exportAsSVG)
+            // Add piece if present
             const pieceType = boardState[row][col];
             if (pieceType) {
-                // Create circle for the piece
+                // Create a group for the piece
+                const pieceGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+                // Calculate piece position and size
                 const pieceSize = squareSize * 0.8;
+                const pieceX = x + (squareSize - pieceSize) / 2;
+                const pieceY = y + (squareSize - pieceSize) / 2;
 
-                const piece = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-                piece.setAttribute('cx', x + squareSize / 2);
-                piece.setAttribute('cy', y + squareSize / 2);
-                piece.setAttribute('r', pieceSize / 2);
+                // Set transform to position and scale the piece
+                pieceGroup.setAttribute('transform', `translate(${pieceX}, ${pieceY}) scale(${pieceSize/210})`);
 
-                // Style based on piece type
-                if (pieceType.includes('white')) {
-                    piece.setAttribute('fill', '#f0f0f0');
-                    piece.setAttribute('stroke', '#ddd');
-                } else {
-                    piece.setAttribute('fill', '#333');
-                    piece.setAttribute('stroke', '#222');
+                // Load the appropriate SVG file based on piece type
+                let svgFile;
+                if (pieceType === 'white') {
+                    svgFile = 'man-white.svg';
+                } else if (pieceType === 'black') {
+                    svgFile = 'man-black.svg';
+                } else if (pieceType === 'white-king') {
+                    svgFile = 'king-white.svg';
+                } else if (pieceType === 'black-king') {
+                    svgFile = 'king-black.svg';
                 }
-                piece.setAttribute('stroke-width', '2');
 
-                svg.appendChild(piece);
+                // Use an image element to include the SVG file
+                const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                image.setAttribute('href', svgFile);
+                image.setAttribute('width', '210');
+                image.setAttribute('height', '210');
 
-                // Add king symbol if needed
-                if (pieceType.includes('king')) {
-                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-                    text.setAttribute('x', x + squareSize / 2);
-                    text.setAttribute('y', y + squareSize / 2);
-                    text.setAttribute('text-anchor', 'middle');
-                    text.setAttribute('dominant-baseline', 'middle');
-                    text.setAttribute('font-size', squareSize / 3);
-                    text.setAttribute('font-weight', 'bold');
-
-                    if (pieceType.includes('white')) {
-                        text.setAttribute('fill', '#333');
-                    } else {
-                        text.setAttribute('fill', '#f0f0f0');
-                    }
-
-                    text.textContent = 'K';
-                    svg.appendChild(text);
-                }
+                pieceGroup.appendChild(image);
+                svg.appendChild(pieceGroup);
             }
         }
     }
