@@ -163,13 +163,13 @@ function handleSquareClick(square) {
 
         // Set the appropriate SVG file based on the selected piece
         if (selectedPiece === 'white') {
-            img.src = 'man-white.svg';
+            img.src = 'assets/man-white.svg';
         } else if (selectedPiece === 'black') {
-            img.src = 'man-black.svg';
+            img.src = 'assets/man-black.svg';
         } else if (selectedPiece === 'white-king') {
-            img.src = 'king-white.svg';
+            img.src = 'assets/king-white.svg';
         } else if (selectedPiece === 'black-king') {
-            img.src = 'king-black.svg';
+            img.src = 'assets/king-black.svg';
         }
 
         // Set the img to fill the piece div
@@ -334,10 +334,10 @@ async function exportAsSVG(download = true) {
 
     // Load all SVG piece files
     const svgFiles = {
-        'white': await loadSvgFile('export-man-white.svg'),
-        'black': await loadSvgFile('export-man-black.svg'),
-        'white-king': await loadSvgFile('export-king-white.svg'),
-        'black-king': await loadSvgFile('export-king-black.svg')
+        'white': await loadSvgFile('assets/export-man-white.svg'),
+        'black': await loadSvgFile('assets/export-man-black.svg'),
+        'white-king': await loadSvgFile('assets/export-king-white.svg'),
+        'black-king': await loadSvgFile('assets/export-king-black.svg')
     };
 
     // Add pieces to SVG
