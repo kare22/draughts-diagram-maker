@@ -19,7 +19,7 @@ A simple, browser-based tool for creating and exporting draughts/checkers board 
    - Choose colors for light and dark squares
 3. **Place Pieces**:
    - Select a piece type from the Piece Selection panel
-   - Click on a square to place the selected piece
+   - Click on a dark square to place the selected piece (following standard draughts/checkers rules, pieces can only be placed on dark squares)
    - To remove a piece, either click on it again or select "No Piece (Eraser)" and click on the piece
 4. **Export Your Diagram**:
    - Click "Export as SVG" to download the diagram as an SVG file
