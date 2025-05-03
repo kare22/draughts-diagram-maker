@@ -164,7 +164,7 @@ function updateBoardColors() {
 }
 
 // Export the board as an SVG image
-function exportAsSVG() {
+async function exportAsSVG() {
     const board = document.getElementById('board');
     const boardRect = board.getBoundingClientRect();
     const width = boardRect.width;
@@ -175,6 +175,7 @@ function exportAsSVG() {
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
     // Create diagonal pattern for dark squares
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -183,6 +184,7 @@ function exportAsSVG() {
     pattern.setAttribute('patternUnits', 'userSpaceOnUse');
     pattern.setAttribute('width', '20');
     pattern.setAttribute('height', '20');
+    pattern.setAttribute('patternTransform', 'rotate(0)');
 
     // First diagonal line (45 degrees)
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -228,6 +230,8 @@ function exportAsSVG() {
                 square.setAttribute('fill', lightSquareColor);
             } else {
                 square.setAttribute('fill', darkSquareColor);
+                svg.appendChild(square);
+
                 // Add diagonal pattern on top of the dark square
                 const patternRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                 patternRect.setAttribute('x', x);
@@ -236,9 +240,26 @@ function exportAsSVG() {
                 patternRect.setAttribute('height', squareSize);
                 patternRect.setAttribute('fill', 'url(#diagonalPattern)');
                 svg.appendChild(patternRect);
+                continue; // Skip adding the square again
             }
 
             svg.appendChild(square);
+        }
+    }
+
+    // Load all SVG piece files
+    const svgFiles = {
+        'white': await loadSvgFile('man-white.svg'),
+        'black': await loadSvgFile('man-black.svg'),
+        'white-king': await loadSvgFile('king-white.svg'),
+        'black-king': await loadSvgFile('king-black.svg')
+    };
+
+    // Add pieces to SVG
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            const x = col * squareSize;
+            const y = row * squareSize;
 
             // Add piece if present
             const pieceType = boardState[row][col];
@@ -254,26 +275,17 @@ function exportAsSVG() {
                 // Set transform to position and scale the piece
                 pieceGroup.setAttribute('transform', `translate(${pieceX}, ${pieceY}) scale(${pieceSize/210})`);
 
-                // Load the appropriate SVG file based on piece type
-                let svgFile;
-                if (pieceType === 'white') {
-                    svgFile = 'man-white.svg';
-                } else if (pieceType === 'black') {
-                    svgFile = 'man-black.svg';
-                } else if (pieceType === 'white-king') {
-                    svgFile = 'king-white.svg';
-                } else if (pieceType === 'black-king') {
-                    svgFile = 'king-black.svg';
+                // Get the SVG content for this piece type
+                const pieceSvgContent = svgFiles[pieceType];
+                if (pieceSvgContent) {
+                    // Extract the inner content of the SVG (everything between <svg> and </svg>)
+                    const innerContent = pieceSvgContent.match(/<svg[^>]*>([\s\S]*)<\/svg>/i)[1];
+
+                    // Set the inner HTML of the piece group
+                    pieceGroup.innerHTML = innerContent;
+
+                    svg.appendChild(pieceGroup);
                 }
-
-                // Use an image element to include the SVG file
-                const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-                image.setAttribute('href', svgFile);
-                image.setAttribute('width', '210');
-                image.setAttribute('height', '210');
-
-                pieceGroup.appendChild(image);
-                svg.appendChild(pieceGroup);
             }
         }
     }
@@ -293,8 +305,22 @@ function exportAsSVG() {
     document.body.removeChild(downloadLink);
 }
 
+// Helper function to load SVG file content
+async function loadSvgFile(filename) {
+    try {
+        const response = await fetch(filename);
+        if (!response.ok) {
+            throw new Error(`Failed to load ${filename}: ${response.statusText}`);
+        }
+        return await response.text();
+    } catch (error) {
+        console.error(`Error loading SVG file: ${error.message}`);
+        return null;
+    }
+}
+
 // Export the board as a PNG image
-function exportAsPNG() {
+async function exportAsPNG() {
     // First create an SVG
     const board = document.getElementById('board');
     const boardRect = board.getBoundingClientRect();
@@ -306,6 +332,7 @@ function exportAsPNG() {
     svg.setAttribute('width', width);
     svg.setAttribute('height', height);
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
     // Create diagonal pattern for dark squares
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -314,6 +341,7 @@ function exportAsPNG() {
     pattern.setAttribute('patternUnits', 'userSpaceOnUse');
     pattern.setAttribute('width', '20');
     pattern.setAttribute('height', '20');
+    pattern.setAttribute('patternTransform', 'rotate(0)');
 
     // First diagonal line (45 degrees)
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -341,7 +369,7 @@ function exportAsPNG() {
     // Calculate square size
     const squareSize = width / boardSize;
 
-    // Add squares to SVG (same as in exportAsSVG)
+    // Add squares to SVG
     for (let row = 0; row < boardSize; row++) {
         for (let col = 0; col < boardSize; col++) {
             const x = col * squareSize;
@@ -359,6 +387,8 @@ function exportAsPNG() {
                 square.setAttribute('fill', lightSquareColor);
             } else {
                 square.setAttribute('fill', darkSquareColor);
+                svg.appendChild(square);
+
                 // Add diagonal pattern on top of the dark square
                 const patternRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                 patternRect.setAttribute('x', x);
@@ -367,9 +397,26 @@ function exportAsPNG() {
                 patternRect.setAttribute('height', squareSize);
                 patternRect.setAttribute('fill', 'url(#diagonalPattern)');
                 svg.appendChild(patternRect);
+                continue; // Skip adding the square again
             }
 
             svg.appendChild(square);
+        }
+    }
+
+    // Load all SVG piece files
+    const svgFiles = {
+        'white': await loadSvgFile('man-white.svg'),
+        'black': await loadSvgFile('man-black.svg'),
+        'white-king': await loadSvgFile('king-white.svg'),
+        'black-king': await loadSvgFile('king-black.svg')
+    };
+
+    // Add pieces to SVG
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            const x = col * squareSize;
+            const y = row * squareSize;
 
             // Add piece if present
             const pieceType = boardState[row][col];
@@ -385,26 +432,17 @@ function exportAsPNG() {
                 // Set transform to position and scale the piece
                 pieceGroup.setAttribute('transform', `translate(${pieceX}, ${pieceY}) scale(${pieceSize/210})`);
 
-                // Load the appropriate SVG file based on piece type
-                let svgFile;
-                if (pieceType === 'white') {
-                    svgFile = 'man-white.svg';
-                } else if (pieceType === 'black') {
-                    svgFile = 'man-black.svg';
-                } else if (pieceType === 'white-king') {
-                    svgFile = 'king-white.svg';
-                } else if (pieceType === 'black-king') {
-                    svgFile = 'king-black.svg';
+                // Get the SVG content for this piece type
+                const pieceSvgContent = svgFiles[pieceType];
+                if (pieceSvgContent) {
+                    // Extract the inner content of the SVG (everything between <svg> and </svg>)
+                    const innerContent = pieceSvgContent.match(/<svg[^>]*>([\s\S]*)<\/svg>/i)[1];
+
+                    // Set the inner HTML of the piece group
+                    pieceGroup.innerHTML = innerContent;
+
+                    svg.appendChild(pieceGroup);
                 }
-
-                // Use an image element to include the SVG file
-                const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-                image.setAttribute('href', svgFile);
-                image.setAttribute('width', '210');
-                image.setAttribute('height', '210');
-
-                pieceGroup.appendChild(image);
-                svg.appendChild(pieceGroup);
             }
         }
     }
