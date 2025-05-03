@@ -111,15 +111,36 @@ function setupEventListeners() {
     const pieceOptions = document.querySelectorAll('.piece-option');
     pieceOptions.forEach(option => {
         option.addEventListener('click', function() {
-            // Remove selected state from all options
-            pieceOptions.forEach(opt => opt.removeAttribute('data-selected'));
-
-            // Set selected state on clicked option
-            this.setAttribute('data-selected', 'true');
-
-            // Update selected piece
-            selectedPiece = this.dataset.piece;
+            selectPiece(this.dataset.piece);
         });
+    });
+
+    // Keyboard shortcuts for piece selection
+    document.addEventListener('keydown', function(event) {
+        // Map keys to piece types
+        switch(event.key.toLowerCase()) {
+            case 'w': // White man
+                selectPiece('white');
+                break;
+            case 'e': // White king
+                selectPiece('white-king');
+                break;
+            case 'q': // White star
+                selectPiece('white-star');
+                break;
+            case 's': // Black man
+                selectPiece('black');
+                break;
+            case 'd': // Black king
+                selectPiece('black-king');
+                break;
+            case 'a': // Black star
+                selectPiece('black-star');
+                break;
+            case 'c': // Clear
+                selectPiece('none');
+                break;
+        }
     });
 
     // Export as SVG
@@ -132,6 +153,22 @@ function setupEventListeners() {
     document.getElementById('reset-board').addEventListener('click', function() {
         if (confirm('Are you sure you want to clear the board?')) {
             initializeBoard();
+        }
+    });
+}
+
+// Function to select a piece type
+function selectPiece(pieceType) {
+    // Update selected piece
+    selectedPiece = pieceType;
+
+    // Update UI to reflect selection
+    const pieceOptions = document.querySelectorAll('.piece-option');
+    pieceOptions.forEach(opt => {
+        if (opt.dataset.piece === pieceType) {
+            opt.setAttribute('data-selected', 'true');
+        } else {
+            opt.removeAttribute('data-selected');
         }
     });
 }
