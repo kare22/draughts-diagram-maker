@@ -208,7 +208,7 @@ async function exportAsSVG(download = true) {
     // Add margin for labels
     const margin = 30;
     const labelMargin = 50;
-    const totalWidth = width + margin;
+    const totalWidth = width + margin + 3;
     const totalHeight = height + margin + labelMargin;
 
     // Create SVG element
@@ -354,6 +354,17 @@ async function exportAsSVG(download = true) {
             }
         }
     }
+
+    // Add border around the entire board
+    const boardBorder = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    boardBorder.setAttribute('x', margin);
+    boardBorder.setAttribute('y', margin);
+    boardBorder.setAttribute('width', width);
+    boardBorder.setAttribute('height', height);
+    boardBorder.setAttribute('fill', 'none');
+    boardBorder.setAttribute('stroke', '#000000');
+    boardBorder.setAttribute('stroke-width', '2');
+    svg.appendChild(boardBorder);
 
     // Convert SVG to string
     const serializer = new XMLSerializer();
