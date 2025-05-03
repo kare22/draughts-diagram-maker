@@ -220,25 +220,20 @@ async function exportAsSVG(download = true) {
     // Load tile pattern SVG
     const tilePatternSvg = await loadSvgFile('tile-pattern.svg');
 
-    // Extract the pattern from tile-pattern.svg
+    // Parse the SVG content
     const parser = new DOMParser();
     const tilePatternDoc = parser.parseFromString(tilePatternSvg, 'image/svg+xml');
-    const patternElement = tilePatternDoc.querySelector('pattern');
 
-    // Create defs element and add the pattern
+    // Create defs element for patterns
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
 
-    // Copy attributes from the original pattern
-    pattern.setAttribute('id', 'diagonalPattern');
-    pattern.setAttribute('patternUnits', patternElement.getAttribute('patternUnits'));
-    pattern.setAttribute('width', patternElement.getAttribute('width'));
-    pattern.setAttribute('height', patternElement.getAttribute('height'));
+    // Extract the content from tile-pattern.svg (the g element with the lines)
+    const gElement = tilePatternDoc.querySelector('g');
+    if (!gElement) {
+        console.error('Could not find g element in tile-pattern.svg');
+    }
 
-    // Copy the pattern content
-    pattern.innerHTML = patternElement.innerHTML;
-
-    defs.appendChild(pattern);
+    // We'll create patterns for each dark square later
     svg.appendChild(defs);
 
     // Calculate square size
@@ -296,13 +291,39 @@ async function exportAsSVG(download = true) {
                 square.setAttribute('fill', darkSquareColor);
                 svg.appendChild(square);
 
+                // Create a unique pattern for this square
+                const patternId = `diagonalPattern_${row}_${col}`;
+                const squarePattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+
+                // Set pattern attributes
+                squarePattern.setAttribute('id', patternId);
+                squarePattern.setAttribute('patternUnits', 'userSpaceOnUse');
+                squarePattern.setAttribute('width', '100');
+                squarePattern.setAttribute('height', '100');
+
+                // Calculate pattern scale and position
+                const patternScale = squareSize / 55; // 100 is the pattern's original size
+
+                // Set pattern transform to scale and position it correctly for this square
+                squarePattern.setAttribute('patternTransform', 
+                    `translate(${x}, ${y}) scale(${patternScale})`);
+
+                // Clone the g element and its content for this pattern
+                if (gElement) {
+                    const gClone = gElement.cloneNode(true);
+                    squarePattern.appendChild(gClone);
+                }
+
+                // Add the pattern to defs
+                defs.appendChild(squarePattern);
+
                 // Add diagonal pattern on top of the dark square
                 const patternRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
                 patternRect.setAttribute('x', x);
                 patternRect.setAttribute('y', y);
                 patternRect.setAttribute('width', squareSize);
                 patternRect.setAttribute('height', squareSize);
-                patternRect.setAttribute('fill', 'url(#diagonalPattern)');
+                patternRect.setAttribute('fill', `url(#${patternId})`);
                 svg.appendChild(patternRect);
                 continue; // Skip adding the square again
             }
