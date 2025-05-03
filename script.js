@@ -177,35 +177,27 @@ async function exportAsSVG() {
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
-    // Create diagonal pattern for dark squares
+    // Load tile pattern SVG
+    const tilePatternSvg = await loadSvgFile('tile-pattern.svg');
+
+    // Extract the pattern from tile-pattern.svg
+    const parser = new DOMParser();
+    const tilePatternDoc = parser.parseFromString(tilePatternSvg, 'image/svg+xml');
+    const patternElement = tilePatternDoc.querySelector('pattern');
+
+    // Create defs element and add the pattern
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+
+    // Copy attributes from the original pattern
     pattern.setAttribute('id', 'diagonalPattern');
-    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
-    pattern.setAttribute('width', '20');
-    pattern.setAttribute('height', '20');
-    pattern.setAttribute('patternTransform', 'rotate(0)');
+    pattern.setAttribute('patternUnits', patternElement.getAttribute('patternUnits'));
+    pattern.setAttribute('width', patternElement.getAttribute('width'));
+    pattern.setAttribute('height', patternElement.getAttribute('height'));
 
-    // First diagonal line (45 degrees)
-    const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line1.setAttribute('x1', '0');
-    line1.setAttribute('y1', '0');
-    line1.setAttribute('x2', '20');
-    line1.setAttribute('y2', '20');
-    line1.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
-    line1.setAttribute('stroke-width', '1');
+    // Copy the pattern content
+    pattern.innerHTML = patternElement.innerHTML;
 
-    // Second diagonal line (135 degrees)
-    const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line2.setAttribute('x1', '20');
-    line2.setAttribute('y1', '0');
-    line2.setAttribute('x2', '0');
-    line2.setAttribute('y2', '20');
-    line2.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
-    line2.setAttribute('stroke-width', '1');
-
-    pattern.appendChild(line1);
-    pattern.appendChild(line2);
     defs.appendChild(pattern);
     svg.appendChild(defs);
 
@@ -334,35 +326,27 @@ async function exportAsPNG() {
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
     svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
 
-    // Create diagonal pattern for dark squares
+    // Load tile pattern SVG
+    const tilePatternSvg = await loadSvgFile('tile-pattern.svg');
+
+    // Extract the pattern from tile-pattern.svg
+    const parser = new DOMParser();
+    const tilePatternDoc = parser.parseFromString(tilePatternSvg, 'image/svg+xml');
+    const patternElement = tilePatternDoc.querySelector('pattern');
+
+    // Create defs element and add the pattern
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const pattern = document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+
+    // Copy attributes from the original pattern
     pattern.setAttribute('id', 'diagonalPattern');
-    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
-    pattern.setAttribute('width', '20');
-    pattern.setAttribute('height', '20');
-    pattern.setAttribute('patternTransform', 'rotate(0)');
+    pattern.setAttribute('patternUnits', patternElement.getAttribute('patternUnits'));
+    pattern.setAttribute('width', patternElement.getAttribute('width'));
+    pattern.setAttribute('height', patternElement.getAttribute('height'));
 
-    // First diagonal line (45 degrees)
-    const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line1.setAttribute('x1', '0');
-    line1.setAttribute('y1', '0');
-    line1.setAttribute('x2', '20');
-    line1.setAttribute('y2', '20');
-    line1.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
-    line1.setAttribute('stroke-width', '1');
+    // Copy the pattern content
+    pattern.innerHTML = patternElement.innerHTML;
 
-    // Second diagonal line (135 degrees)
-    const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line2.setAttribute('x1', '20');
-    line2.setAttribute('y1', '0');
-    line2.setAttribute('x2', '0');
-    line2.setAttribute('y2', '20');
-    line2.setAttribute('stroke', 'rgba(255, 255, 255, 0.2)');
-    line2.setAttribute('stroke-width', '1');
-
-    pattern.appendChild(line1);
-    pattern.appendChild(line2);
     defs.appendChild(pattern);
     svg.appendChild(defs);
 
