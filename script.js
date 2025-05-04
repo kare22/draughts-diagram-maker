@@ -107,6 +107,16 @@ function setupEventListeners() {
         updateBoardColors();
     });
 
+    // FEN notation application
+    document.getElementById('apply-fen').addEventListener('click', function() {
+        const fenString = document.getElementById('fen-input').value.trim();
+        if (fenString) {
+            applyFenNotation(fenString);
+        } else {
+            alert('Please enter a valid FEN notation');
+        }
+    });
+
     // Piece selection
     const pieceOptions = document.querySelectorAll('.piece-option');
     pieceOptions.forEach(option => {
@@ -461,6 +471,102 @@ async function loadSvgFile(filename) {
         console.error(`Error loading SVG file: ${error.message}`);
         return null;
     }
+}
+
+// Parse and apply FEN notation to the board
+function applyFenNotation(fenString) {
+    // Clear the current board
+    initializeBoard();
+
+    try {
+        // Parse the FEN string
+        // Format example: W:Wb4,a3,c3,e3,g3,b2,d2,f2,h2,c1,e1,g1:Bb8,d8,f8,h8,a7,e7,g7,d6,f6,h6,a5,c5:H0:F4
+        const parts = fenString.split(':');
+
+        if (parts.length < 3) {
+            alert('Invalid FEN notation format');
+            return;
+        }
+
+        // Process white pieces (format: Wb4,a3,...)
+        let whitePieces = [];
+
+        if (parts[1].startsWith('W')) {
+            // Get all white pieces
+            whitePieces = parts[1].substring(1).split(',').filter(p => p.trim());
+        }
+
+        // Process black pieces (format: Bb8,d8,...)
+        let blackPieces = [];
+
+        if (parts[2].startsWith('B')) {
+            // Get all black pieces
+            blackPieces = parts[2].substring(1).split(',').filter(p => p.trim());
+        }
+
+        // Place pieces on the board
+        // For now, we'll assume all pieces are regular pieces (not kings)
+        // This can be adjusted if the FEN notation has a specific way to indicate kings
+        placePiecesFromNotation(whitePieces, true, false);
+        placePiecesFromNotation(blackPieces, false, false);
+
+    } catch (error) {
+        console.error('Error parsing FEN notation:', error);
+        alert('Error parsing FEN notation. Please check the format and try again.');
+    }
+}
+
+// Helper function to place pieces from notation
+function placePiecesFromNotation(piecesList, isWhite, isKing = false) {
+    piecesList.forEach(notation => {
+        if (!notation) return; // Skip empty notations
+
+        // Get the square coordinates - normalize to lowercase for calculation
+        const positionLower = notation.toLowerCase();
+        const col = positionLower.charCodeAt(0) - 97; // Convert 'a' to 0, 'b' to 1, etc.
+        const row = boardSize - parseInt(positionLower.substring(1)); // Convert '1' to 7, '2' to 6, etc. (for 8x8 board)
+
+        // Skip if coordinates are out of bounds
+        if (row < 0 || row >= boardSize || col < 0 || col >= boardSize) {
+            console.warn(`Invalid coordinates in FEN notation: ${notation}`);
+            return;
+        }
+
+        // Find the square element
+        const square = document.querySelector(`.square[data-row="${row}"][data-col="${col}"]`);
+        if (!square) {
+            console.warn(`Square not found for coordinates: row=${row}, col=${col}`);
+            return;
+        }
+
+        // Determine piece type based on color and whether it's a king
+        let pieceType;
+        if (isWhite) {
+            pieceType = isKing ? 'white-king' : 'white';
+        } else {
+            pieceType = isKing ? 'black-king' : 'black';
+        }
+
+        // Place the piece
+        const existingPiece = square.querySelector('.piece');
+        if (existingPiece) {
+            square.removeChild(existingPiece);
+        }
+
+        const piece = document.createElement('div');
+        piece.className = 'piece';
+
+        const img = document.createElement('img');
+        img.src = `assets/${pieceType.includes('king') ? 'king' : 'man'}-${isWhite ? 'white' : 'black'}.svg`;
+        img.style.width = '100%';
+        img.style.height = '100%';
+
+        piece.appendChild(img);
+        square.appendChild(piece);
+
+        // Update board state
+        boardState[row][col] = pieceType;
+    });
 }
 
 // Export the board as a PNG image
